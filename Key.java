@@ -1,5 +1,7 @@
+import java.math.*;
 public class Key
 {
+	private String bin;
 	private String[] keySeq;
 	
 	public static final int[][] PC1 = new int[][]
@@ -29,8 +31,9 @@ public class Key
 	//Default constructor
 	public Key(String inKey)
 	{
+		bin = new String(convertHexToBin(inKey));
 		keySeq = new String[16];
-		keySeq = generateSubKeys(inKey); 	
+		keySeq = generateSubKeys(bin); 	
 	}
 
 	public String[] getAllKeys()
@@ -127,7 +130,13 @@ public class Key
 
 	}
 
+	private String convertHexToBin(String hex)
+	{
+		String binary = new BigInteger(hex,16).toString(2);
+		binary = String.format("%64s",binary).replace(" ", "0");
 
+		return binary;
+	}
 
 
 

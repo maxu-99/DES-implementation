@@ -1,3 +1,5 @@
+import java.io.*;
+import java.util.Scanner;
 import java.math.BigInteger;
 public class DES
 {
@@ -122,16 +124,23 @@ public class DES
 		{28,29,30,31,32,1}
 	};
 	
-	public DES(String text, Key inKey)
+	public DES(String text, String inKey)
 	{
 		encrypted = new StringBuilder("");
 		decrypted = new StringBuilder("");
-		this.key = inKey;
+		this.key = new Key(inKey);
 
 		this.encrypt(text);
 		this.decrypt(this.encrypted.toString());
-	}
 
+	}
+/*
+	public DES(File file String inKey)
+	{
+		this.key = new Key(inKey);
+		this.fileHandle(file);
+	}
+*/
 	//Not using plain for now
 	public void encrypt(String plain)
 	{
@@ -151,7 +160,7 @@ public class DES
 		for(int index = 0; index < binary.length(); index += 64)
 		{
 			String message = binary.substring(index, index + 64);
-			message = feistelEnc(message);
+			message = feistel(message,true);
 			binaryEncrypted.append(message);
 		}
 
@@ -178,26 +187,37 @@ public class DES
 		for(int index = 0; index < cipherbinary.length(); index += 64)
 		{
 			String message = cipherbinary.substring(index, index + 64);
-			message = feistelDec(message);
+			message = feistel(message,false);
 			cipherDecrypted.append(message);
 		}
 		
 		System.out.println("DECRYPTED : " + cipherDecrypted.toString());
 
-		decrypted.append(convertBinaryToString(cipherDecrypted.toString()));
+		//decrypted.append(convertBinaryToString(cipherDecrypted.toString()));
+		decrypted.append(cipherDecrypted.toString());
 
-		System.out.println("DECRYPTED in words : " + decrypted.toString());
+	//	System.out.println("DECRYPTED in words : " + decrypted.toString());
 		
 	}
 
+	public String getEncryptedWord()
+	{
+		return new String(convertBinaryToString(encrypted.toString()));
+	}
 
-	public String feistelEnc(String plainbit)
+
+	public String getDecryptedWord()
+	{
+		return new String(convertBinaryToString(decrypted.toString()));
+	}
+
+	public String feistel(String plainbit, boolean isEncrypt)
 	{
 		//String[] subKeys = ket.getAllKeys();
 		String initialPermutedOutput = this.initialPermutation(plainbit);
 		System.out.println("First IP : " + initialPermutedOutput);
 
-		String processedOutput = this.roundEnc(initialPermutedOutput);
+		String processedOutput = this.round(initialPermutedOutput,isEncrypt);
 		System.out.println("After 16 rounds final output : " + processedOutput);
 
 		String finalOutput = this.inversePermutation(processedOutput);
@@ -207,7 +227,7 @@ public class DES
 		return finalOutput;
 
 	}
-
+/*
 	public String feistelDec(String plainbit)
 	{
 		//String[] subKeys = ket.getAllKeys();
@@ -221,7 +241,7 @@ public class DES
 		return finalOutput;
 
 	}
-
+*/
 	//Carry out intial permuation on 64 bits
 	public String initialPermutation(String input)
 	{
@@ -246,11 +266,20 @@ public class DES
 	}
 
 
-	public String roundEnc(String input)
+	public String round(String input, boolean isEncrypt)
 	{
 		//int index = 0;
 		String left, right, temp;
-		String[] subKeys = key.getAllKeys();
+		String[] subKeys;
+
+		if(isEncrypt)
+		{
+			subKeys = key.getAllKeys();
+		}
+		else
+		{
+			subKeys = key.getAllKeysReverse();
+		}
 
 		for(int index = 0; index < 16; index++)
 		{
@@ -291,7 +320,7 @@ public class DES
 		return new String(left + right);
 */
 	
-
+/*
 	
 	public String roundDec(String input)
 	{
@@ -330,14 +359,14 @@ public class DES
 	}
 	
 	
+*/
 
-
-
+/*
 	public String fFunction(String input, String key)
 	{
 		return fPermutation(substitution(xor(expansion(input),key)));
 	}
-
+*/
 
 
 
@@ -505,5 +534,34 @@ public class DES
 
 		return padded.toString();
 	}
+/*
+	public static void fileOp(File inFile)
+	{
+		Scanner sc;
+		File encryptedOutput, decryptedOutput;
+		PrintWriter pwEncrypted, pwDecrypted;
 
+		try
+		{
+			sc = new Scanner(inFile);
+			encryptedOutput = new File("encrypted.txt");
+			decryptedOutput = new File("decrypted.txt");
+			String line;
+
+			pwEncrypted = new PrintWriter(encryptedOutput);
+			pwDecrypted = new PrintWriter(decryptedOutput);
+
+			pwEncrypted.println(des.getEncryptedWord());
+			pwDecrypted.println(des.getDecryptedWord());
+
+			pwEncrypted.close();
+			pwDecrypted.close();
+		}
+		catch(IOException e)
+		{
+			System.err.println(e.getMessage());
+		}
+	}
+*/
+	
 }

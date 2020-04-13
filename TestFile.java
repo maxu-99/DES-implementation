@@ -6,13 +6,15 @@ public class TestFile
 	public static void main(String[] args)
 	{
 		String filename = "testfile-DES.txt";
+
+//		String filename = "hello.txt";
 		String hexKey = CheckValid.checkInput();
 
-		String plainLine = fileRead(filename, String hexKey);
+		fileOp(filename, hexKey);
 
 //		DES des = new DES(plainLine, hexKey);
 
-		fileSave(des);
+		//fileSave(des);
 
 		System.out.println("Encryption successfull");
 		System.out.println("Encrypted text stored in encrypted.txt");
@@ -20,23 +22,43 @@ public class TestFile
 
 	}
 
-	public static String fileRead(String filename, String key)
+	public static void fileOp(String filename, String key)
 	{
+		DES des;
 		Scanner sc;
-		File file;
+		File fileToOpen;
 		String line = "";
+		File encryptedOutput, decryptedOutput;
+		PrintWriter pwEncrypted, pwDecrypted;
+
 		try
 		{
-			file = new File(filename);
-			sc = new Scanner(file);
+			encryptedOutput = new File("encrypted.txt");
+			decryptedOutput = new File("decrypted.txt");
+
+			pwEncrypted = new PrintWriter(encryptedOutput);
+			pwDecrypted = new PrintWriter(decryptedOutput);
+
+
+			fileToOpen = new File(filename);
+			sc = new Scanner(fileToOpen);
 
 			while(sc.hasNextLine())
 			{
-
-				line = line + sc.nextLine();
+				//line = line + sc.nextLine();
+				line = sc.nextLine();
+				if(line.isEmpty())
+				{
+					line = "\n";
+				}
+				des = new DES(line, key);	
+				pwEncrypted.println(des.getEncryptedWord());
+				pwDecrypted.println(des.getDecryptedWord());
 
 			}
 
+			pwEncrypted.close();
+			pwDecrypted.close();
 			sc.close();
 		}
 		catch(IOException e)
@@ -44,10 +66,10 @@ public class TestFile
 			System.err.println(e.getMessage());
 		}
 
-		return new String(line);
+//		return new String(line);
 	}
 
-
+/*
 	public static void fileSave(DES des)
 	{
 		Scanner sc;
@@ -74,6 +96,6 @@ public class TestFile
 		}
 	}
 
-	
+*/	
 
 }	

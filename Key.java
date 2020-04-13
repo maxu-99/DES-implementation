@@ -123,7 +123,6 @@ public class Key
 			//Perform second permutation generating 48 bit key sequence
 			subKeys[round - 1] = this.pcSecond(merge);
 
-			System.out.println("Generated key " + round + " : " + subKeys[round - 1]);
 		}
 
 		return subKeys;

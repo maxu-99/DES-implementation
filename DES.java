@@ -1,6 +1,6 @@
 import java.io.*;
 import java.util.Scanner;
-import java.math.BigInteger;
+import java.math.*;
 public class DES
 {
 	private StringBuilder encrypted;
@@ -134,28 +134,15 @@ public class DES
 		this.decrypt(this.encrypted.toString());
 
 	}
-/*
-	public DES(File file String inKey)
-	{
-		this.key = new Key(inKey);
-		this.fileHandle(file);
-	}
-*/
-	//Not using plain for now
+
 	public void encrypt(String plain)
 	{
-		//878787878787
-//		String binary = "1000011110000111100001111000011110000111100001111000011110000111";
 
-		//int index = 0;
 		String binary = binaryConversion(plain);
 
-		//M
-		//String binary = "0000000100100011010001010110011110001001101010111100110111101111";
 
 		StringBuilder binaryEncrypted = new StringBuilder("");
 
-		System.out.println("BINARY P.T : " + binary);
 		//Time to encrypt 64 bits p.t to c.t
 		for(int index = 0; index < binary.length(); index += 64)
 		{
@@ -165,24 +152,14 @@ public class DES
 		}
 
 		encrypted.append(binaryEncrypted.toString());
-		System.out.println("ENCRYPTED : " + binaryEncrypted.toString());
-		System.out.println("ENCRYPTED LENGTH : " + binaryEncrypted.length());
-
-//		encrypted.append(convertBinaryToString(binaryEncrypted.toString()));
-
-//		System.out.println("ENCRYPTED in words : " + encrypted.toString());
 
 	}
 
 	public void decrypt(String cipherbinary)
 	{
-//		int index = 0;
-		//String cipherbinary = binaryConversion(cipher);
-		//String cipherbinary = "0000000000000000000000000000000000000000000000000000000000000000";
  
 		StringBuilder cipherDecrypted = new StringBuilder("");
 
-		System.out.println("CIPHER P.T : " + cipherbinary);
 
 		for(int index = 0; index < cipherbinary.length(); index += 64)
 		{
@@ -191,12 +168,9 @@ public class DES
 			cipherDecrypted.append(message);
 		}
 		
-		System.out.println("DECRYPTED : " + cipherDecrypted.toString());
 
-		//decrypted.append(convertBinaryToString(cipherDecrypted.toString()));
 		decrypted.append(cipherDecrypted.toString());
 
-	//	System.out.println("DECRYPTED in words : " + decrypted.toString());
 		
 	}
 
@@ -208,40 +182,25 @@ public class DES
 
 	public String getDecryptedWord()
 	{
-		return new String(convertBinaryToString(decrypted.toString()));
+		String original = new String(convertBinaryToString(decrypted.toString()));
+		original = removeExcessChar(original);
+
+	   	return original;	
 	}
 
 	public String feistel(String plainbit, boolean isEncrypt)
 	{
-		//String[] subKeys = ket.getAllKeys();
 		String initialPermutedOutput = this.initialPermutation(plainbit);
-		System.out.println("First IP : " + initialPermutedOutput);
 
 		String processedOutput = this.round(initialPermutedOutput,isEncrypt);
-		System.out.println("After 16 rounds final output : " + processedOutput);
 
 		String finalOutput = this.inversePermutation(processedOutput);
 
-		System.out.println("Final IP inverse output : " + finalOutput);
 		
 		return finalOutput;
 
 	}
-/*
-	public String feistelDec(String plainbit)
-	{
-		//String[] subKeys = ket.getAllKeys();
-		String initialPermutedOutput = this.initialPermutation(plainbit);
 
-		String processedOutput = this.roundDec(initialPermutedOutput);
-
-		String finalOutput = this.inversePermutation(processedOutput);
-		System.out.println("Final IP inverse output : " + finalOutput);
-
-		return finalOutput;
-
-	}
-*/
 	//Carry out intial permuation on 64 bits
 	public String initialPermutation(String input)
 	{
@@ -268,7 +227,6 @@ public class DES
 
 	public String round(String input, boolean isEncrypt)
 	{
-		//int index = 0;
 		String left, right, temp;
 		String[] subKeys;
 
@@ -284,20 +242,15 @@ public class DES
 		for(int index = 0; index < 16; index++)
 		{
 			left = input.substring(0,32);
-			System.out.println("LEFT  : " + left);
 
 			right = input.substring(32,input.length());
-			System.out.println("RIGHT : " + right);
 
 
 			temp = expansion(right);
-			System.out.println("After expansion of right : " + temp);
 
 			temp = xor(temp,subKeys[index]);
-			System.out.println("After first XOR with key : " + temp);
 
 			temp = substitution(temp);
-			System.out.println("After SBOX operation : " + temp);
 
 			temp = fPermutation(temp);
 
@@ -310,64 +263,6 @@ public class DES
 
 		return new String(input);
 	}
-
-/*
-		while(index < 16)
-		{
-			right = this.xor(right, this.fFunction(left, subKeys[index++]));
-		}
-
-		return new String(left + right);
-*/
-	
-/*
-	
-	public String roundDec(String input)
-	{
-		String left, right, temp;
-		String[] subKeys = key.getAllKeys();
-
-		for(int index = 15; index >= 0; index--)
-		{
-			left = input.substring(0,32);
-			System.out.println("LEFT  : " + left);
-
-			right = input.substring(32,input.length());
-			System.out.println("RIGHT : " + right);
-
-
-			temp = expansion(right);
-			System.out.println("After expansion of right : " + temp);
-
-			temp = xor(temp,subKeys[index]);
-			System.out.println("After first XOR with key : " + temp);
-
-			temp = substitution(temp);
-			System.out.println("After SBOX operation : " + temp);
-
-			temp = fPermutation(temp);
-
-			temp = xor(temp,left);
-
-			input = right + temp;
-		}
-		
-		input = input.substring(32,input.length()) + input.substring(0,32);
-
-		return new String(input);
-
-	}
-	
-	
-*/
-
-/*
-	public String fFunction(String input, String key)
-	{
-		return fPermutation(substitution(xor(expansion(input),key)));
-	}
-*/
-
 
 
 	//Set bit to 1 if two XOR bits are different
@@ -394,36 +289,6 @@ public class DES
 	}
 
 	//Sbox
-	/*
-	public String substitution(String bitstring)
-	{
-		StringBuilder output = new StringBuilder("");
-		String partbits, col, row;
-		
-		String sBoxVal;
-
-		int x = 0, y = 0, sBoxNum = 0, index = 0;
-
-		while(index < 48)
-		{
-			partbits = bitstring.substring(index, index + 6);
-			row = bitstring.charAt(0) + bitstring.substring(5,6);
-			col = bitstring.substring(1,5);
-			x = Integer.parseInt(row,2);
-			y = Integer.parseInt(col,2);
-
-			sBoxVal = binaryFormat(SBOXES[sBoxNum][x][y],4);
-		//	sBoxVal = 
-
-
-			output.append(sBoxVal);
-			index = index + 6;
-			sBoxNum++;
-		}
-
-		return output.toString();
-	}
-	*/
 
 	public String substitution(String input)
 	{
@@ -448,15 +313,7 @@ public class DES
 
 	private String binaryFormat(int num, int length)
 	{
-	/*	
-		String binary = Integer.toBinaryString(num);
-		//String binary = new BigInteger(num,2).toString(2);
-		binary = String.format("%"+ length +"s",binary).replace(' ','0');
-		return binary;
-	*/
-		 
 		String binary =	String.format("%"+ length + "s", Integer.toBinaryString(num)).replace(' ', '0');
-//		System.out.println("Binary value for S box : " + binary + " for number : " + num);
 		return binary;
 		
 	}
@@ -466,7 +323,6 @@ public class DES
 	{
 		String word = new String(new BigInteger(binary,2).toByteArray());
 	
-	//	String word = ((char)(Integer.parseInt(binary,2)));
 		return word;
 	}
 
@@ -534,34 +390,20 @@ public class DES
 
 		return padded.toString();
 	}
-/*
-	public static void fileOp(File inFile)
+
+
+	private String removeExcessChar(String text)
 	{
-		Scanner sc;
-		File encryptedOutput, decryptedOutput;
-		PrintWriter pwEncrypted, pwDecrypted;
-
-		try
-		{
-			sc = new Scanner(inFile);
-			encryptedOutput = new File("encrypted.txt");
-			decryptedOutput = new File("decrypted.txt");
-			String line;
-
-			pwEncrypted = new PrintWriter(encryptedOutput);
-			pwDecrypted = new PrintWriter(decryptedOutput);
-
-			pwEncrypted.println(des.getEncryptedWord());
-			pwDecrypted.println(des.getDecryptedWord());
-
-			pwEncrypted.close();
-			pwDecrypted.close();
-		}
-		catch(IOException e)
-		{
-			System.err.println(e.getMessage());
-		}
+		// strips off all non-ASCII characters
+        text = text.replaceAll("[^\\x00-\\x7F]", "");
+ 
+        // erases all the ASCII control characters
+       	text = text.replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "");
+         
+        // removes non-printable characters from Unicode
+        text = text.replaceAll("\\p{C}", "");
+ 
+        return text.trim();
 	}
-*/
 	
 }

@@ -1,4 +1,13 @@
-import java.util.*;
+/* Author : Mahmudul Hossain (19303235)
+ * Purpose : Perfom des encryption on the input file 
+ * 			 and output the encrypted file along with
+ * 			 the decrypted file which is then compared 
+ * 			 with the input file
+ * Last modified : 14/04/2020
+ */
+
+
+import java.util.Scanner;
 import java.io.*;
 
 public class TestFile
@@ -6,30 +15,31 @@ public class TestFile
 	public static void main(String[] args)
 	{
 		String filename = "testfile-DES.txt";
-
 //		String filename = "hello.txt";
+		//A valid hexadecimal key gets inputted from user
 		String hexKey = CheckValid.checkInput();
 
+		//Perform necessary file operation
 		fileOp(filename, hexKey);
 
-//		DES des = new DES(plainLine, hexKey);
-
-		//fileSave(des);
-
-		System.out.println("Encryption successfull");
+		//Notify user what files are created
 		System.out.println("Encrypted text stored in encrypted.txt");
 		System.out.println("Deccrypted text stored in decrypted.txt");
 
 	}
 
+	//Open and read the input filename
+	//Encrypts each line read which is saved into encrypted.txt
+	//Decrypts each encrypted line which is saved into decrypted.txt
 	public static void fileOp(String filename, String key)
 	{
 		DES des;
 		Scanner sc;
 		File fileToOpen;
-		String line = "";
+		String line = new String();
 		File encryptedOutput, decryptedOutput;
 		PrintWriter pwEncrypted, pwDecrypted;
+		int lineNum  = 1;
 
 		try
 		{
@@ -43,17 +53,38 @@ public class TestFile
 			fileToOpen = new File(filename);
 			sc = new Scanner(fileToOpen);
 
+			//Read every line of input file 
+			//Perform DES encryption and decryption
 			while(sc.hasNextLine())
 			{
-				//line = line + sc.nextLine();
+				//Plain text to encrypt
 				line = sc.nextLine();
+
+				//If line is empty, the encrypted and decrypted line is also empty
+				//So no des applied
 				if(line.isEmpty())
 				{
-					line = "\n";
+					pwEncrypted.println(line);
+					pwDecrypted.println(line);
 				}
-				des = new DES(line, key);	
-				pwEncrypted.println(des.getEncryptedWord());
-				pwDecrypted.println(des.getDecryptedWord());
+				//If line is not empty perform des
+				else
+				{
+					//Perform des encryption and decryption
+					des = new DES(line, key);
+					//Compare the plain text and decrypted line to ensure successful
+					//des encryption and decryption
+					//If an error occurs, output the line number where the des failed
+					if(!(line.compareTo(des.getDecryptedWord()) == 0))
+					{
+						System.out.println("ERROR at line number : " + lineNum);
+					}
+					//Print the encrypted and decrypted texts into appropriate files
+					pwEncrypted.println(des.getEncryptedWord());
+					pwDecrypted.println(des.getDecryptedWord());
+				}
+
+				lineNum++;
 
 			}
 
@@ -66,36 +97,6 @@ public class TestFile
 			System.err.println(e.getMessage());
 		}
 
-//		return new String(line);
 	}
-
-/*
-	public static void fileSave(DES des)
-	{
-		Scanner sc;
-		File encryptedOutput, decryptedOutput;
-		PrintWriter pwEncrypted, pwDecrypted;
-
-		try
-		{
-			encryptedOutput = new File("encrypted.txt");
-			decryptedOutput = new File("decrypted.txt");
-
-			pwEncrypted = new PrintWriter(encryptedOutput);
-			pwDecrypted = new PrintWriter(decryptedOutput);
-
-			pwEncrypted.println(des.getEncryptedWord());
-			pwDecrypted.println(des.getDecryptedWord());
-
-			pwEncrypted.close();
-			pwDecrypted.close();
-		}
-		catch(IOException e)
-		{
-			System.err.println(e.getMessage());
-		}
-	}
-
-*/	
 
 }	

@@ -1,15 +1,15 @@
 For example as pointed out by researcher. For each set of fuzzy terms, $A \subseteq M$, $\prod_{m\in
 A}m$ represents a conjunction of the fuzzy terms in $A$. For
 instance,
-let $A=\{m_{1,2},m_{2,1},m_{4,2}\}\subseteq M$, a new
+ let $A=\{m_{1,2},m_{2,1},m_{4,2}\}\subseteq M$, a new
 fuzzy concept ``$m_{1,2}$ and $m_{2,1}$ and $m_{4,2}$" with the linguist
 interpretation ``\emph{short sepal and wide sepal and narrow petal}"
 can be represented as $\prod_{m\in
-A}m=m_{1,2}m_{2,1}m_{4,2}$. Then the fuzzy rules can be represented as follows:
+ A}m=m_{1,2}m_{2,1}m_{4,2}$. Then the fuzzy rules can be represented as follows:
 
 \bigskip
 
-\textbf{Rule} $R_1$ : If $x$ is
+ \textbf{Rule} $R_1$ : If $x$ is
 $m_{1,2}m_{2,1}m_{4,2}$, then $x$ belongs to Class 1;
 
 \textbf{Rule} $R_2$ : If $x$ is $m_{2,1}m_{3,2}$, then $x$ belongs
@@ -33,7 +33,7 @@ fuzzy concepts $\prod_{m\in A_u}m$, $A_u \subseteq M$, is the disjunction of
 the conjunctions represented by $\prod_{m\in A_u}m, u=1,\ldots,r$.
 For example, let $A_1=\{m_{1,2},m_{2,1},m_{4,2}\},
 A_2=\{m_{2,1},m_{3,2}\}, A_3=\{m_{1,2},m_{4,2}\} \subseteq M$, then
-a new
+ a new
 fuzzy set (i.e., fuzzy concept) as the disjunction of $\prod_{m\in A_1}m$,  $\prod_{m\in
 A_2}m$,  $\prod_{m\in A_3}m$, i.e., ``$m_{1,2}m_{2,1}m_{4,2}$ or
 $m_{2,1}m_{3,2}$ or $m_{1,2}m_{4,2}$'', can be represented as
@@ -67,7 +67,7 @@ B_{j}}m)\right] \Longleftrightarrow (\emph{i})\forall A_{i}\ (i\in I),\exists B_
 such that$A_{i}\supseteq B_{h}$; (\emph{ii}) $\forall B_{j}$ $(j\in J),$
 $\exists $ $A_{k}\ (k\in I)$, such that $B_{j}\supseteq A_{k}$.
 
-If $R$ is an equivalence relation. Then a quotient set, $%
+ If $R$ is an equivalence relation. Then a quotient set, $%
 EM^{\ast }/R$ is denoted as $EM$. The notation $ \sum_{i\in
 I}(\prod_{m \in A_{i}}m)=\sum_{j\in J}(\prod_{m \in B_{j}}m)$ means
 that $ \sum_{i\in I}(\prod_{m \in A_{i}}m)$ and $\sum_{j\in
@@ -196,7 +196,7 @@ space $(\Omega, \mathcal{F}, \mathcal{P})$. Thus the above membership function (
 \begin{equation}
 \mu_{\xi}(x)=\sup_{i\in I}\inf_{\gamma\in A_{i}}\frac{\int_{
 A^\succeq_{i}(x)}\rho_{\gamma}(t)d\mathcal{P}(t)}{\int_{\Omega}\rho_{\gamma}(t)d\mathcal{P}(t)}, \ \ \ \
-\forall x\in \Omega, \label{miu4}
+ \forall x\in \Omega, \label{miu4}
 \end{equation}
 In \cite{xref:/book/book}, it has been proven that the membership functions defined by (\ref{miu4}) are also coherent membership functions and the
 membership function defined by (\ref{miu3}) converges to that defined by (\ref{miu4}), for all $x\in \Omega$

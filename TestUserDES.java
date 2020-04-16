@@ -1,11 +1,10 @@
 /* Author : Mahmudul Hossain (19303235)
  * Purpose : Perform DES(Data Encryption Standard) encryption and decryption
  * 			 using user input
- * Last Modified : 13/04/2020
+ * Last Modified : 15/04/2020
  */
 
 import java.util.Scanner;
-
 
 public class TestUserDES
 {

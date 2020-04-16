@@ -3,12 +3,13 @@
  * 			 encryption and decryption with the help of several
  * 			 functions storing the encrypted and decrypted text in
  * 			 binary form
- * Last Modified : 15/04/2020
+ * Last Modified : 16/04/2020
  */
 	
 import java.io.*;
 import java.util.Scanner;
 import java.math.BigInteger;
+
 public class DES
 {
 	//Stores the binary form of encrypted text
@@ -99,6 +100,7 @@ public class DES
 	//The first intial permutation on plain text binary 
 	//Rearrangement of 64 bit binary input to 64 bit 
 	//binary output
+	//8 rows and 8 columns
 	private static final int[][] INITIALPERM = new int[][]
 	{
 		{58,50,42,34,26,18,10,2},
@@ -114,6 +116,7 @@ public class DES
 	//The final permutation after 16 rounds of round function
 	//Rearrangement of 64 bit binary input to 64 bit binary
 	//output
+	//8 rows and 8 columns
 	private static final int[][] FINALPERMINV = new int[][]
 	{
 		{40,8,48,16,56,24,64,32},
@@ -126,10 +129,10 @@ public class DES
 		{33,1,41,9,49,17,57,25}
 	};
 
-	//PPermutation
 	//The permutation part taking the 32 bit output from SBOX
 	//operation
 	//Rearrangement of 32 bit binary to 32 bit binary output
+	//8 rows and 4 columns
 	private static final int[][] FPERMUTATION = new int[][]
 	{
 		{16,7,20,21},
@@ -145,6 +148,7 @@ public class DES
 	//The expansion permutation taking the right half of bit string
 	//during round function
 	//Rearrangement of 32 bit binary to 48 bit binary output
+	//8 rows and 6 columns
 	private static final int[][] EXPANSION = new int[][]
 	{
 		{32,1,2,3,4,5},
@@ -184,6 +188,7 @@ public class DES
 	//Updates the encrypted variable
 	public void encrypt(String plain)
 	{
+
 		//Convert the entire plain text into binary equivalent
 		//The binary text returned has a text length of a 
 		//multiple of 64
@@ -199,11 +204,11 @@ public class DES
 		{
 			//Generate subsequent 64 bit plain binary to encrypt
 			String message = binary.substring(index, index + 64);
-			
+		
 			//Store the final encrypted 64 bit string
 			//true is used as a flag to perform encryption
 			//false is used as a flag to perform decryption
-			message = feistel(message,true);
+			message = feistel(message, true);
 
 			//Update the intermediate binary string 
 			//by adding subsequent sections of encrypted 
@@ -238,7 +243,7 @@ public class DES
 			//Store the final decrypted 64 bit string 
 			//true is used as a flag to perform encryption
 			//false is used as a flag to perform decryption
-			message = feistel(message,false);
+			message = feistel(message, false);
 
 			//Update the intermediate binary string
 			//by adding subsequent sections of decrypted
@@ -291,7 +296,7 @@ public class DES
 		//Perform the final permutation on bit string 
 		String finalOutput = this.inversePermutation(processedOutput);
 
-		
+		//Return the binary equivalent of the equivalent plainbit
 		return finalOutput;
 
 	}
@@ -319,7 +324,7 @@ public class DES
 		return new String(output);
 	}
 
-	//Carry out the final permutation on 64 bit string into
+	//carry out the final permutation on 64 bit string into
 	//a specific arrangement of bits which is 
 	//mentioned in FINALPERMINV above
 	public String inversePermutation(String input)
@@ -412,10 +417,19 @@ public class DES
 		
 		//After 16 rounds being carried out, a final swap function is carried
 		//out swapping the left and right substring
-		input = input.substring(32,input.length()) + input.substring(0,32);
+		input = switchOp(input);
 
 		return new String(input);
 	}
+	
+	//Switch operation
+	//Swap left and right substring
+	public String switchOp(String input)
+	{	
+		input = input.substring(32, input.length()) + input.substring(0, 32);
+		return new String(input);
+	}
+
 
 	//Performs XOR operation with two bit strings of equal length
 	public String xor(String s1, String s2)
@@ -447,45 +461,86 @@ public class DES
 				outputXOR[index] = '0';
 			}
 		}
-
+		//Return the XORed output as a string
 		return new String(outputXOR);
 	}
 
 	//Sbox
-
+	//Take a 48 bit string input and generate 
+	//a 32 bit string using sbox operation
 	public String substitution(String input)
 	{
-		String output = "";
+		//Stores the final calculated values from SBOX operation
+		//in banary form
+		String output = new String();
+		int num, row, col;
+		
+		//Loop through the input string obtaining
+		//6 bit blocks of bit string from left to right
+		//The 6 bit block undergoes specific SBOX operation
+		//generating an appropriate 4 bit block
 		for(int i = 0; i < 48; i += 6)
 		{
+			//Obtain 6 bit block
 			String temp = input.substring(i, i + 6);
-			int num = i / 6;
-			int row = Integer.parseInt(temp.charAt(0) + "" + temp.charAt(5),2);
 
-			int col = Integer.parseInt(temp.substring(1,5),2);
+			//Obtain the SBOX number
+			num = i / 6;
 
+			//Obtain the row number for the SBOX 
+			//The first and last bits of the 6 bit string represents the
+			//row number in binary form which will be a 2 bit string
+			//Convert the binary form of row number to decimal which will 
+			//be in the range from 0 to 3
+			row = Integer.parseInt(temp.charAt(0) + "" + temp.charAt(5), 2);
+
+			//Obtain the column number for the SBOX 
+			//The centre bits of the 6 bit string represents the
+			//row number in binary form which will be a 4 bit string
+			//Convert the binary form of column number to decimal which will 
+			//be in the range from 0 to 15
+			col = Integer.parseInt(temp.substring(1, 5), 2);
+
+			//Map the row and column number on the specific sbox number
+			//The value stored in that specific co-ordinate of the SBOX
+			//is obtained and converted to binary to produce a 4 bit string
+			//Add the generated 4 bit string to output
 			output += binaryFormat(SBOXES[num][row][col], 4);
 		}
 
+		//Return the calculated 32 bit string
 		return output;
 	}
 
 
-
-
-
+	//Converts a number to its binary equivalent and pads extra zeroes 
+	//if necessary to match the required length
 	private String binaryFormat(int num, int length)
 	{
 		String binary =	String.format("%"+ length + "s", Integer.toBinaryString(num)).replace(' ', '0');
-		return binary;
-		
+		return binary;	
 	}
 
-
+	//Maps the binary string of 0s and 1s to a string
+	//of characters
 	private String convertBinaryToString(String binary)
 	{
-		String word = new String(new BigInteger(binary,2).toByteArray());
-	
+		String word = new String();
+
+		//Special case if the binary string is empty
+		if(binary.length() == 0)
+		{
+			//The equivalent binary empty string represents an empty word
+			word = "";
+		}
+		//If the binary string contains a stream of 0s or 1s
+		else
+		{
+			//Convert the binary string to words
+			word = new String(new BigInteger(binary, 2).toByteArray());
+		}
+
+		//Return the converted character string
 		return word;
 	}
 
@@ -493,68 +548,124 @@ public class DES
 	//Expand 32 bit input to 48 bit using the expansion substitution table
 	public String expansion(String input)
 	{
+		//Store the new expanded output
 		char[] newExpansion = new char[48];
-		char[] rightInput = input.toCharArray();
 
+		//map each character of the input string to char array		
+		//char[] rightInput = input.toCharArray();
+
+		//Loop through each index position of 48 bit newExpansion 
+		//char aray
+		//Set each index in the newExpansion array to the corresponding 
+		//index of input string where the new index position is 
+		//obtained from EXPANSION
+		//Each permuted index has to be substracted by 1 since array starts
+		//from 0
 		for(int index = 0; index < 48; index++)
 		{
-			newExpansion[index] = rightInput[EXPANSION[index / 6][index % 6] - 1];
+			newExpansion[index] = input.charAt(EXPANSION[index / 6][index % 6] - 1);
 		}
-
+		
+		//Return the expanded 48 bit string
 		return new String(newExpansion);
 	}		
 			
-
+	//Carry out fpermuation on 32 bit string generated
+	//from SBOX operation into
+	//a specific arrangement of bits which is 
+	//metioned in FPERMUTATION above
 	public String fPermutation(String input)
 	{
+
+		//Store the updated mapping of 32 bit string
 		char[] output = new char[32];
+
+		//Loop through each index position of 32 bit input string
+		//Set each index in the output array to the corresponding 
+		//index of input string where the new index position is 
+		//obtained from FPERMUTATION
+		//Each permuted index has to be substracted by 1 since array starts
+		//from 0
 		for(int index = 0; index < 32; index++)
 		{
 			output[index] = input.charAt(FPERMUTATION[index / 4][index % 4] - 1);
 		}
 		
+		//Convery the char array to String output of new mapped
+		//32 bit string
 		return new String(output);
 	}
 
+	//Convert stream of plain text to binary 
 	public String binaryConversion(String plain)
 	{
 		char c;
+
+		//Stores the binary equivalent of each character
 		String binary = new String();
+		
+		//Stores the binary equivalent of the whole 
+		//plain text
 		String total = new String();
+
+		//Loop thorugh each character on the plain text and
+		//convert it to its binary equivalent
 		for(int i = 0; i < plain.length(); i++)
 		{
+			//Obtain each character
 			c = plain.charAt(i);
+
+			//Convert the character to binary
 			binary = Integer.toBinaryString(c);
-			binary = this.pad(binary,8);
+
+			//Pad necessary 0s at the front to
+			//make it into 8 bots
+			binary = this.pad(binary, 8);
+
+			//Update total by adding the new 
+			//binary string generated
 			total = total + binary;
 		}
 		
+		//Check to see if the total length is a multiple of 64 so that
+		//substrings of 0s and 1s of size 64 can be exactly passed into
+		//DES functions during encryption and decryption
 		if(total.length() % 64 != 0)
 		{
 			//Final padding to make the whole plain text to a multiple of 64 bits
+			//Extra 0s are padded to the end
 			int remainder = total.length() % 64;
 			for(int ii = 0; ii < 64 - remainder; ii++)
 			{
 				total = total + "0";
 			}
 		}
-
+		
+		//Return the binary equivalent string of the plain text which has a length
+		//of a multiple of 64
 		return total;	
 	}
 
+	//Pad extra zeroes to the front of the binary string input
+	//to the size of l
 	public String pad(String binary, int l)
 	{
 		StringBuilder padded = new StringBuilder(binary);
-
+		
+		//Pad extra zeroes until the length l is 
+		//achieved
 		while(padded.length() < l)
 		{
-			padded.insert( 0, '0');
+			padded.insert(0, '0');
 		}
 
 		return padded.toString();
 	}
 
-
+	//Remove excess characters from the decrypted 
+	//text that were generated from padding
+	//Code adjusted from 
+	//https://howtodoinjava.com/regex/java-clean-ascii-text-non-printable-chars/
 	private String removeExcessChar(String text)
 	{
 		// strips off all non-ASCII characters
@@ -562,11 +673,11 @@ public class DES
  
         // erases all the ASCII control characters
        	text = text.replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "");
-         
+        
         // removes non-printable characters from Unicode
         text = text.replaceAll("\\p{C}", "");
- 
-        return text/*.trim()*/;
+ 		
+        return text;
 	}
 	
 }

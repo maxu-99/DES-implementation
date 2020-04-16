@@ -3,7 +3,7 @@
  * 			 and output the encrypted file along with
  * 			 the decrypted file which is then compared 
  * 			 with the input file
- * Last modified : 14/04/2020
+ * Last modified : 15/04/2020
  */
 
 
@@ -15,7 +15,6 @@ public class TestFile
 	public static void main(String[] args)
 	{
 		String filename = "testfile-DES.txt";
-//		String filename = "hello.txt";
 		//A valid hexadecimal key gets inputted from user
 		String hexKey = CheckValid.checkInput();
 
@@ -49,7 +48,6 @@ public class TestFile
 			pwEncrypted = new PrintWriter(encryptedOutput);
 			pwDecrypted = new PrintWriter(decryptedOutput);
 
-
 			fileToOpen = new File(filename);
 			sc = new Scanner(fileToOpen);
 
@@ -60,29 +58,18 @@ public class TestFile
 				//Plain text to encrypt
 				line = sc.nextLine();
 
-				//If line is empty, the encrypted and decrypted line is also empty
-				//So no des applied
-				if(line.isEmpty())
+				//Perform des encryption and decryption
+				des = new DES(line, key);
+				//Compare the plain text and decrypted line to ensure successful
+				//des encryption and decryption
+				//If an error occurs, output the line number where the des failed
+				if(!(line.compareTo(des.getDecryptedWord()) == 0))
 				{
-					pwEncrypted.println(line);
-					pwDecrypted.println(line);
+					System.out.println("ERROR at line number : " + lineNum);
 				}
-				//If line is not empty perform des
-				else
-				{
-					//Perform des encryption and decryption
-					des = new DES(line, key);
-					//Compare the plain text and decrypted line to ensure successful
-					//des encryption and decryption
-					//If an error occurs, output the line number where the des failed
-					if(!(line.compareTo(des.getDecryptedWord()) == 0))
-					{
-						System.out.println("ERROR at line number : " + lineNum);
-					}
-					//Print the encrypted and decrypted texts into appropriate files
-					pwEncrypted.println(des.getEncryptedWord());
-					pwDecrypted.println(des.getDecryptedWord());
-				}
+				//Print the encrypted and decrypted texts into appropriate files
+				pwEncrypted.println(des.getEncryptedWord());
+				pwDecrypted.println(des.getDecryptedWord());
 
 				lineNum++;
 

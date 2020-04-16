@@ -280,27 +280,6 @@ public class DES
 	   	return original;	
 	}
 
-	//The intial permutation function to encrypt and decrypt a 64 bit binary string
-	//Imports a 64 bit binary string
-	//Exports a 64 bit binary string
-	//isEncrypt is true of encryption and false for decryption
-	public String feistel(String plainbit, boolean isEncrypt)
-	{
-		//Perform initial permuation on bit string
-		String initialPermutedOutput = this.initialPermutation(plainbit);
-
-		//Obtain the final outputted 64 bit string after 16 rounds of round 
-		//function
-		String processedOutput = this.round(initialPermutedOutput,isEncrypt);
-
-		//Perform the final permutation on bit string 
-		String finalOutput = this.inversePermutation(processedOutput);
-
-		//Return the binary equivalent of the equivalent plainbit
-		return finalOutput;
-
-	}
-
 	//Carry out intial permuation on 64 bit string into
 	//a specific arrangement of bits which is 
 	//metioned in INITIALPERM above
@@ -347,11 +326,15 @@ public class DES
 		return new String(output);
 	}
 
-	//Perfroms 16 rounds of nesessary functions for 
+	//The intial permutation function to encrypt and decrypt a 64 bit binary string
+	//Imports a 64 bit binary string
+	//Exports a 64 bit binary string
+	//isEncrypt is true of encryption and false for decryption
+	//Perfroms 16 rounds of nesessary functions including 
+	//expansion,permutation,sboxes and XOR
+	//Performs final inverse permutation 
 	//DES encryption and decryption to work correctly
-	//isEncrypt is true for encryption
-	//isEncrypt is false for decryption
-	public String round(String input, boolean isEncrypt)
+	public String feistel(String input, boolean isEncrypt)
 	{
 		//Store the left and right sub strings
 		//temp is used to store the intermediate state bits 
@@ -360,6 +343,9 @@ public class DES
 
 		//Keys to XORed  
 		String[] subKeys;
+
+		//Perform initial permuation on bit string
+		input = this.initialPermutation(input);
 
 		if(isEncrypt)
 		{
@@ -419,7 +405,11 @@ public class DES
 		//out swapping the left and right substring
 		input = switchOp(input);
 
-		return new String(input);
+		//Perform the final permutation on bit string 
+		String finalOutput = this.inversePermutation(input);
+
+		//Return the binary equivalent of final string
+		return new String(finalOutput);
 	}
 	
 	//Switch operation

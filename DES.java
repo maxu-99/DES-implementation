@@ -507,7 +507,8 @@ public class DES
 	//if necessary to match the required length
 	private String binaryFormat(int num, int length)
 	{
-		String binary =	String.format("%"+ length + "s", Integer.toBinaryString(num)).replace(' ', '0');
+		String binary = Integer.toBinaryString(num);
+		binary = this.pad(binary, 4);
 		return binary;	
 	}
 

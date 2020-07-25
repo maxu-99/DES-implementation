@@ -1,10 +1,10 @@
-/* Author : Mahmudul Hossain
+/* Author : Mahmudul Hossain (19303235)
  * Purpose : This class contains 16 sub-keys generated from
  * 			 the hexadecimal key input, also including
  * 			 all the necessary functions required to generate
  * 			 these sub keys which will then be used during
  * 			 des encryption and decryption
- * Last modified : 15/04/2020
+ * Last modified : 18/04/2020
  */
 
 import java.math.BigInteger;
@@ -56,7 +56,7 @@ public class Key
 		//Create 16 entries to store 48-bit sub keys 
 		keySeq = new String[16];
 
-		//Create 16 sub-keys using bin and store them
+		//Create 16 48-bit sub-keys using bin and store them
 		keySeq = generateSubKeys(bin); 	
 	}
 
@@ -157,14 +157,14 @@ public class Key
 		//The centre bits traverses by 1 or 2 bits to the left
 		for(int round = 1; round <= 16; round++)
 		{
-			//Left shift by 1 bit for these specific rounds
+			//Left circular shift by 1 bit for these specific rounds
 			if(round == 1 || round == 2 || round == 9 || round == 16)
 			{
 				//Update the left and right half with 1 left shift
 				c = c.substring(1,c.length()) + c.charAt(0);
 				d = d.substring(1,d.length()) + d.charAt(0);
 			}
-			//Left shift by 2 bits
+			//Left circular shift by 2 bits
 			else
 			{
 				//Update the left and right half with 2 left shifts

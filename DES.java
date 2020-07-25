@@ -1,9 +1,9 @@
 /* Author : Mahmudul Hossain (19303235)
- * Purpose : This class perform the Data Encryption Standard (DES)
+ * Purpose : This class performs the Data Encryption Standard (DES)
  * 			 encryption and decryption with the help of several
  * 			 functions storing the encrypted and decrypted text in
  * 			 binary form
- * Last Modified : 16/04/2020
+ * Last Modified : 18/04/2020
  */
 	
 import java.io.*;
@@ -22,6 +22,13 @@ public class DES
 	//containing shifted keys
 	//Used for encryption and decryption purposes
 	private Key key;
+
+	//Stores the binary equivalent length of the 
+	//plain text bit string
+	//Used for chopping of excess bits during 
+	//decryption
+	private int size;
+
 
 	//For all the mappings carried out, the left most bit
 	//of a binary string is considered as 1st postion
@@ -174,6 +181,12 @@ public class DES
 		//Generate appropriate keys
 		this.key = new Key(inKey);
 
+		//Since each character in the text will be
+		//converted to its binary equivalent of 
+		//8 bits, the total bit string size would
+		//be 8 times the size of the plain text
+		this.size = text.length() * 8;
+
 		//Perform encryption on the plain text
 		//Store it in encrypted
 		this.encrypt(text);
@@ -202,9 +215,10 @@ public class DES
 		//Encrypt 64 bit sections of the binary text
 		for(int index = 0; index < binary.length(); index += 64)
 		{
-			//Generate subsequent 64 bit plain binary to encrypt
+			//Generate subsequent 64 bit plain binary string to encrypt
 			String message = binary.substring(index, index + 64);
 		
+			//Perform the entire encryption process
 			//Store the final encrypted 64 bit string
 			//true is used as a flag to perform encryption
 			//false is used as a flag to perform decryption
@@ -237,9 +251,10 @@ public class DES
 		//Decrypt 64 bit sections of the binary text
 		for(int index = 0; index < cipherbinary.length(); index += 64)
 		{
-			//Generate subsequent 64 bit encrypted binary to decrypted 
+			//Generate subsequent 64 bit encrypted binary string to be decrypted 
 			String message = cipherbinary.substring(index, index + 64);
 
+			//Perfom the entire decryption process
 			//Store the final decrypted 64 bit string 
 			//true is used as a flag to perform encryption
 			//false is used as a flag to perform decryption
@@ -251,9 +266,19 @@ public class DES
 			cipherDecrypted.append(message);
 		}
 
-		//Update the final state of cipherDecrypted to
-		//decrypted StringBuilder
-		decrypted.append(cipherDecrypted.toString());
+		//Apply necessary chopping of excess bits that were
+		//padded during	plain text to binary conversion
+		//Hence, obtaining the original binary equivalent of the 
+		//plain text
+		String recoveredText = cipherDecrypted.toString();
+		recoveredText = recoveredText.substring(0, size);
+
+
+		//recoveredText contains the actual decrypted binary
+		//equivalent of the plain text if the DES operation 
+		//were successful which is now assigned to the 
+		//private classfield decrypted
+		decrypted.append(recoveredText);
 
 		
 	}
@@ -272,11 +297,8 @@ public class DES
 	//decrypted characters
 	public String getDecryptedWord()
 	{
+
 		String original = new String(convertBinaryToString(decrypted.toString()));
-
-		//Remove any unnecessary characters that were generated during padding 
-		original = removeExcessChar(original);
-
 	   	return original;	
 	}
 
@@ -303,7 +325,7 @@ public class DES
 		return new String(output);
 	}
 
-	//carry out the final permutation on 64 bit string into
+	//Carry out the final permutation on 64 bit string into
 	//a specific arrangement of bits which is 
 	//mentioned in FINALPERMINV above
 	public String inversePermutation(String input)
@@ -332,7 +354,7 @@ public class DES
 	//isEncrypt is true of encryption and false for decryption
 	//Perfroms 16 rounds of nesessary functions including 
 	//expansion,permutation,sboxes and XOR
-	//Performs final inverse permutation 
+	//Performs final inverse permutation for 
 	//DES encryption and decryption to work correctly
 	public String feistel(String input, boolean isEncrypt)
 	{
@@ -431,7 +453,7 @@ public class DES
 		//Check if two bit strings are equal in length
 		if(bits1.length != bits2.length)
 		{
-			throw new IllegalArgumentException("Inputed strings are different ");
+			throw new IllegalArgumentException("Input strings have different lengths.");
 		}
 		
 		//Store the final XORed output
@@ -451,17 +473,18 @@ public class DES
 				outputXOR[index] = '0';
 			}
 		}
+
 		//Return the XORed output as a string
 		return new String(outputXOR);
 	}
 
-	//Sbox
+	//Sbox calculation
 	//Take a 48 bit string input and generate 
 	//a 32 bit string using sbox operation
 	public String substitution(String input)
 	{
 		//Stores the final calculated values from SBOX operation
-		//in banary form
+		//in binary form
 		String output = new String();
 		int num, row, col;
 		
@@ -508,7 +531,7 @@ public class DES
 	private String binaryFormat(int num, int length)
 	{
 		String binary = Integer.toBinaryString(num);
-		binary = this.pad(binary, 4);
+		binary = this.padding(binary, 4);
 		return binary;	
 	}
 
@@ -541,9 +564,6 @@ public class DES
 	{
 		//Store the new expanded output
 		char[] newExpansion = new char[48];
-
-		//map each character of the input string to char array		
-		//char[] rightInput = input.toCharArray();
 
 		//Loop through each index position of 48 bit newExpansion 
 		//char aray
@@ -582,7 +602,7 @@ public class DES
 			output[index] = input.charAt(FPERMUTATION[index / 4][index % 4] - 1);
 		}
 		
-		//Convery the char array to String output of new mapped
+		//Convert the char array to String output of the newly mapped
 		//32 bit string
 		return new String(output);
 	}
@@ -611,7 +631,7 @@ public class DES
 
 			//Pad necessary 0s at the front to
 			//make it into 8 bots
-			binary = this.pad(binary, 8);
+			binary = this.padding(binary, 8);
 
 			//Update total by adding the new 
 			//binary string generated
@@ -639,7 +659,7 @@ public class DES
 
 	//Pad extra zeroes to the front of the binary string input
 	//to the size of l
-	public String pad(String binary, int l)
+	public String padding(String binary, int l)
 	{
 		StringBuilder padded = new StringBuilder(binary);
 		
@@ -653,22 +673,4 @@ public class DES
 		return padded.toString();
 	}
 
-	//Remove excess characters from the decrypted 
-	//text that were generated from padding
-	//Code adjusted from 
-	//https://howtodoinjava.com/regex/java-clean-ascii-text-non-printable-chars/
-	private String removeExcessChar(String text)
-	{
-		// strips off all non-ASCII characters
-        text = text.replaceAll("[^\\x00-\\x7F]", "");
- 
-        // erases all the ASCII control characters
-       	text = text.replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "");
-        
-        // removes non-printable characters from Unicode
-        text = text.replaceAll("\\p{C}", "");
- 		
-        return text;
-	}
-	
 }
